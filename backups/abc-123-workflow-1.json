@@ -1,0 +1,12 @@
+{
+  "id": "abc-123-workflow-1",
+  "name": "Sincronizar Clientes de Stripe a HubSpot",
+  "active": true,
+  "nodes": [
+    {
+      "id": "node1",
+      "type": "Webhook"
+    }
+  ],
+  "connections": {}
+}
