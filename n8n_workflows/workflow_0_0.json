@@ -1,0 +1,31 @@
+{
+  "result": "<!DOCTYPE html>
+<html lang=\"en\">
+\t<head>
+\t\t<script type=\"module\" crossorigin src=\"/assets/polyfills-BhZQ1FDI.js\"></script>
+
+\t\t<meta charset=\"utf-8\" />
+\t\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />
+\t\t<meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\" />
+\t\t<link rel=\"icon\" href=\"/favicon.ico\" />
+\t\t<meta name=\"n8n:config:rest-endpoint\" content=\"cmVzdA==\"><meta name=\"n8n:config:sentry\" content=\"eyJkc24iOiIiLCJlbnZpcm9ubWVudCI6ImRldmVsb3BtZW50IiwicmVsZWFzZSI6Im44bkAxLjExMS4wIn0=\">
+\t\t<link rel=\"stylesheet\" href=\"/static/prefers-color-scheme.css\">
+\t\t<script src=\"/static/base-path.js\" type=\"text/javascript\"></script>
+\t\t<script src=\"/static/posthog.init.js\" type=\"text/javascript\"></script>
+
+\t\t<title>n8n.io - Workflow Automation</title>
+\t\t<script type=\"module\" crossorigin src=\"/assets/index-DuLlH1tF.js\"></script>
+\t\t<link rel=\"stylesheet\" crossorigin href=\"/assets/index-DnpNicM9.css\">
+\t</head>
+\t<body>
+\t\t<noscript>
+\t\t\t<strong
+\t\t\t\t>We're sorry but the n8n Editor-UI doesn't work properly without JavaScript enabled. Please
+\t\t\t\tenable it to continue.</strong
+\t\t\t>
+\t\t</noscript>
+\t\t<div id=\"app\"></div>
+\t</body>
+</html>
+"
+}
