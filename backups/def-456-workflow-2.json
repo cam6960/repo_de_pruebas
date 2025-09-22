@@ -1,0 +1,12 @@
+{
+  "id": "def-456-workflow-2",
+  "name": "Generador de Reportes PDF Diarios",
+  "active": true,
+  "nodes": [
+    {
+      "id": "nodeA",
+      "type": "Schedule"
+    }
+  ],
+  "connections": {}
+}
