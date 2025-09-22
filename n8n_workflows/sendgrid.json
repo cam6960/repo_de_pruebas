@@ -1,0 +1,714 @@
+{
+  "createdAt": "2025-09-22T12:50:00.163Z",
+  "updatedAt": "2025-09-22T12:50:00.163Z",
+  "id": "1P2AaNcIfAkv32lE",
+  "name": "sendgrid",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "id": "7f31111a-8105-4a79-ab0b-fb91451027f6",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -144,
+        144
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "id": "7240d4ff-e543-4d63-9e8b-86d7ffb0ca56",
+      "name": "Retrieve workflows",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        352,
+        144
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0791d828-5049-4816-85b4-2b15c305d5a8",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        192,
+        144
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": ""
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "filePath": "="
+      },
+      "id": "1c42399e-cae7-462d-8bd0-45b33bd00480",
+      "name": "List files from repo",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        32,
+        144
+      ],
+      "webhookId": "354d699e-44b0-4444-9d31-af7fd4ff5561",
+      "typeVersion": 1,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": ""
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "filePath": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json",
+        "fileContent": "={{ $('To base64').item.json.data }}",
+        "commitMessage": "=backup-{{ $('Commit date & file name').item.json.commitDate }}"
+      },
+      "id": "3c1bef00-19a2-46e7-9dd9-f7847a9a34b2",
+      "name": "Update file",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1152,
+        64
+      ],
+      "webhookId": "27218087-8df7-474d-a39f-70cfa9c34ec8",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": ""
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "filePath": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json",
+        "fileContent": "={{ $('To base64').item.json.data }}",
+        "commitMessage": "=backup-{{ $node['Commit date & file name'].json.commitDate }}"
+      },
+      "id": "9d950987-8e8d-41a9-ad8e-a19977b04b8e",
+      "name": "Upload file",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1152,
+        224
+      ],
+      "webhookId": "ce4b561b-acb9-4cd8-b76f-4928dada9674",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Aggregate').item.json.name }}",
+              "operation": "contains",
+              "value2": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json"
+            }
+          ]
+        }
+      },
+      "id": "2f8f60ed-5c64-4c6b-8291-67f39aa514a1",
+      "name": "Check if file exists",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        992,
+        144
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "options": {
+          "format": true
+        }
+      },
+      "id": "4e469ff7-393a-4d60-b4e8-ee107b9b71d3",
+      "name": "Json file",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        512,
+        144
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "id": "e3fc1fc9-2bed-4031-993f-d0600983e2c8",
+      "name": "To base64",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        672,
+        144
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### Retrieve previous file names from Github",
+        "height": 380,
+        "width": 300,
+        "color": 5
+      },
+      "id": "5559a361-59d4-43ba-96f3-049da6fb7754",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe4a36ef-9f04-40e3-99bd-cc517a49b440",
+              "name": "commitDate",
+              "type": "string",
+              "value": "={{ $now.format('dd-MM-yyyy/H:mm') }}"
+            },
+            {
+              "id": "b0fe1bcc-e79c-4a6b-b8b4-44222c8bf4e8",
+              "name": "fileName",
+              "type": "string",
+              "value": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "73abe95f-326b-4d9c-910b-5b583b210e01",
+      "name": "Commit date & file name",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        832,
+        144
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "### Retrieve and process workflows from n8n",
+        "height": 380,
+        "width": 460,
+        "color": 3
+      },
+      "id": "661e53c4-b85a-41fc-b136-f6d26625b995",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### Commit + edit/create files if needed",
+        "height": 380,
+        "width": 460,
+        "color": 4
+      },
+      "id": "b86f3f05-b8fa-433c-ad7c-d22254b711d1",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "a2e778fc-9b40-4507-8ce9-9122ea0237b3",
+      "name": "On clicking 'execute'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        528,
+        736
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "custom",
+              "cronExpression": "15 7 * * 1-6"
+            }
+          ]
+        }
+      },
+      "id": "ce77c568-3c51-40bb-bc91-9052ffb5d10b",
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        528,
+        528
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "databaseId": 146,
+        "tableId": 680,
+        "additionalOptions": {}
+      },
+      "id": "79ade368-12fd-455b-9e72-4e6b3197f5f5",
+      "name": "Baserow",
+      "type": "n8n-nodes-base.baserow",
+      "position": [
+        752,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://www.tradegate.de/orderbuch.php",
+        "responseFormat": "string",
+        "options": {},
+        "queryParametersUi": {
+          "parameter": [
+            {
+              "name": "isin",
+              "value": "={{$json[\"ISIN\"]}}"
+            }
+          ]
+        }
+      },
+      "id": "34e28684-5c8a-4991-b148-60075bb18e2c",
+      "name": "Fetch tradegate stock page",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        976,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "extractionValues": {
+          "values": [
+            {
+              "key": "WKN",
+              "cssSelector": "#col1_content > table > tbody > tr:nth-child(2) > td:nth-child(1)"
+            },
+            {
+              "key": "ISIN",
+              "cssSelector": "#col1_content > table > tbody > tr:nth-child(2) > td:nth-child(3)"
+            },
+            {
+              "key": "Currency",
+              "cssSelector": "#col1_content > table > tbody > tr:nth-child(2) > td:nth-child(4)"
+            },
+            {
+              "key": "Name",
+              "cssSelector": "#col1_content > h2"
+            },
+            {
+              "key": "Bid",
+              "cssSelector": "#bid"
+            },
+            {
+              "key": "Ask",
+              "cssSelector": "#ask"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "38e45cc0-f70a-4ed3-bc58-4ef0b7d98ff6",
+      "name": "Parse tradegate stock page",
+      "type": "n8n-nodes-base.htmlExtract",
+      "position": [
+        1200,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "functionCode": "const columns = Object.keys(items[0].json);
+
+// Define the basic table structure
+let table_header = `<table style=\"border: 1px solid black; border-collapse: collapse;\"><tr>${columns.map(e => '<th style=\"border: 1px solid black; border-collapse: collapse;\">' + e + '</th>').join('')}</tr>`;
+let table_content = \"\";
+let table_footer = '</table>';
+
+// Add content to our table
+for (item of items) {
+    table_content += '<tr>'
+    for (column of columns) {
+        table_content += `<td style=\\\"border: 1px solid black; border-collapse: collapse;\\\">${item.json[column]}</td>`
+    }
+    table_content += '</tr>'
+}
+
+// Prepare HTML email body
+const email_html = `<body style=\"font-family: Sans-Serif;\">
+<p>Investments as of ${$now.setZone(\"Europe/Dublin\").setLocale('ie').toFormat('fff')}:</p>
+${table_header}
+${table_content}
+${table_footer}
+<p>Total: ${items.map(e => parseFloat(e.json['Current Value'])).reduce((a, b) => a + b, 0).toFixed(2)}</p>
+<p><small>Workflow #${$workflow.id}</small></p>
+</body>`
+
+
+return [{
+    json: {
+        html: email_html
+    }
+}];"
+      },
+      "id": "8dbeb71d-6896-4f19-8f8b-36c3990e3c16",
+      "name": "Build HTML",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        1856,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "Name",
+              "value": "={{ $node[\"Baserow\"].json[\"Name\"] }}"
+            },
+            {
+              "name": "ISIN",
+              "value": "={{ $node[\"Baserow\"].json[\"ISIN\"] }}"
+            },
+            {
+              "name": "Count",
+              "value": "={{ $node[\"Baserow\"].json[\"Count\"] }}"
+            },
+            {
+              "name": "Purchase Price",
+              "value": "={{ $node[\"Baserow\"].json[\"Purchase Price\"] }}"
+            },
+            {
+              "name": "Current Value",
+              "value": "={{ (parseFloat($json[\"Bid\"].replace(',', '.')) * parseFloat($node[\"Baserow\"].json[\"Count\"])).toFixed(2) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fd5d0e51-8c3c-4509-8cc5-2bd10a348c93",
+      "name": "Format result",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1408,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "Change",
+              "value": "={{ ( parseFloat($json[\"Current Value\"]) - parseFloat($json[\"Purchase Price\"]) ).toFixed(2) }}"
+            },
+            {
+              "name": "Change (%)",
+              "value": "={{ ( ( ( parseFloat($json[\"Current Value\"]) - parseFloat($json[\"Purchase Price\"]) ) / parseFloat($json[\"Purchase Price\"]) ) * 100).toFixed(2) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3e336b71-30b7-4b47-9449-c5218468c874",
+      "name": "Calculate change",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1632,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "mail",
+        "fromEmail": "mutedjam@n8n.io",
+        "toEmail": "mutedjam@n8n.io",
+        "subject": "Investment report",
+        "contentType": "text/html",
+        "contentValue": "={{ $json[\"html\"] }}",
+        "additionalFields": {}
+      },
+      "id": "a7b1c388-0c2e-4a14-936a-a2e6ccebf05d",
+      "name": "SendGrid",
+      "type": "n8n-nodes-base.sendGrid",
+      "position": [
+        2080,
+        640
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Retrieve workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Json file": {
+      "main": [
+        [
+          {
+            "node": "To base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "To base64": {
+      "main": [
+        [
+          {
+            "node": "Commit date & file name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "List files from repo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve workflows": {
+      "main": [
+        [
+          {
+            "node": "Json file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if file exists": {
+      "main": [
+        [
+          {
+            "node": "Update file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List files from repo": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit date & file name": {
+      "main": [
+        [
+          {
+            "node": "Check if file exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "Baserow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baserow": {
+      "main": [
+        [
+          {
+            "node": "Fetch tradegate stock page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build HTML": {
+      "main": [
+        [
+          {
+            "node": "SendGrid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format result": {
+      "main": [
+        [
+          {
+            "node": "Calculate change",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate change": {
+      "main": [
+        [
+          {
+            "node": "Build HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On clicking 'execute'": {
+      "main": [
+        [
+          {
+            "node": "Baserow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch tradegate stock page": {
+      "main": [
+        [
+          {
+            "node": "Parse tradegate stock page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse tradegate stock page": {
+      "main": [
+        [
+          {
+            "node": "Format result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "d5e3795d-b1a1-4bbe-9d7a-161125634fcf",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-22T12:50:00.163Z",
+      "updatedAt": "2025-09-22T12:50:00.163Z",
+      "role": "workflow:owner",
+      "workflowId": "1P2AaNcIfAkv32lE",
+      "projectId": "XDSXqJERuGM10SXD"
+    }
+  ],
+  "tags": []
+}
