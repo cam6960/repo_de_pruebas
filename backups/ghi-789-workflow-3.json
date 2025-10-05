@@ -1,0 +1,12 @@
+{
+  "id": "ghi-789-workflow-3",
+  "name": "Notificador de Errores a Slack",
+  "active": false,
+  "nodes": [
+    {
+      "id": "nodeX",
+      "type": "ErrorTrigger"
+    }
+  ],
+  "connections": {}
+}

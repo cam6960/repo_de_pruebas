@@ -1,0 +1,798 @@
+{
+  "createdAt": "2025-09-22T12:47:40.942Z",
+  "updatedAt": "2025-09-22T12:47:40.942Z",
+  "id": "x85JmYFbyVWjpvjd",
+  "name": "My workflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "81817cdc-31fa-40af-925e-d08107811f5f",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -608,
+        464
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "3cf5b451-9ff5-4c2a-864f-9aa7d286871a",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "Ready"
+            },
+            {
+              "id": "a9b6d102-bb38-443f-a204-1c07476cb360",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              },
+              "leftValue": "={{ $runIndex }}",
+              "rightValue": 5
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6f5c159c-18c6-4cbe-9624-b17ac38075b9",
+      "name": "Is Ready?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        80,
+        864
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "url": "https://api.bfl.ml/v1/get_result",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c1bb6347-e6e6-4335-82c4-7dcb57e30fcf",
+      "name": "Check FLUX status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -96,
+        864
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "# Image processing part",
+        "height": 282,
+        "width": 862,
+        "color": 7
+      },
+      "id": "c0539256-1413-49ae-9c94-309534d05e69",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -496,
+        784
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "b539debb-cbc1-4265-b59d-f61a900b7023",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -816,
+        864
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.bfl.ml/v1/flux-kontext-pro",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "input_image",
+              "value": "={{ $json[$('When Executed by Another Workflow').first().json.binaryin] }}"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $('When Executed by Another Workflow').first().json.prompt }}"
+            },
+            {
+              "name": "prompt_upsampling",
+              "value": "={{ false }}"
+            },
+            {
+              "name": "output_format",
+              "value": "png"
+            },
+            {
+              "name": " aspect_ratio",
+              "value": "1:1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c2d05e7e-4f89-4924-9d04-865131a00c95",
+      "name": "FLUX Kontext",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -432,
+        864
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "id": "34ee2e0c-f2b7-449c-8740-e682618dd3a5",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -16,
+        464
+      ],
+      "typeVersion": 3.1
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "d5960358-0342-4b23-b0a2-cc8bee7835ca",
+      "name": "Wait 2 sec",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -256,
+        864
+      ],
+      "webhookId": "3df5a762-edab-49df-ac70-be3b56545212",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "content": "## Define prompts here
+Prepare an array of prompts that will be used one by one on the next steps. Update limit in the `Number of Steps` node if you need more than 5 iterations.",
+        "height": 260,
+        "width": 380
+      },
+      "id": "9ba51182-b714-412e-abd0-714a3253ebb3",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -448,
+        224
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Load the initial image",
+        "height": 220,
+        "width": 380
+      },
+      "id": "1881488c-b314-42b9-b13e-3a33ecda220e",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -448,
+        528
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Initial example
+![](https://raw.githubusercontent.com/teds-tech-talks/n8n-community-leaderboard/main/_creators/eduard/mascot.png)",
+        "height": 400,
+        "width": 260
+      },
+      "id": "002a7d78-6458-4d52-b131-47b01ced7f7d",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -768,
+        48
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "teds-tech-talks"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "n8n-community-leaderboard"
+        },
+        "filePath": "_creators/eduard/mascot.png",
+        "asBinaryProperty": false,
+        "additionalParameters": {}
+      },
+      "id": "c0d58236-8fc0-4ddf-8066-5e7b2de5ed60",
+      "name": "Get File from GitHub",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        -416,
+        592
+      ],
+      "webhookId": "e70d0c46-6478-4c11-85a6-8b7e1f9588de",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.download_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data0"
+            }
+          }
+        }
+      },
+      "id": "5859c610-114b-4fe7-85d9-c6531c36a993",
+      "name": "Download Initial Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -208,
+        592
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "4d3dcb8f-c435-40fd-aca6-a37647fc3a10",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              },
+              "leftValue": "={{ $runIndex }}",
+              "rightValue": "={{ $json.Steps }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1c8c5d8-ee5b-4f22-8af7-5d98af3a61e4",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        256,
+        464
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9e3d00d0-467a-41c8-aaa1-f1d29694737c",
+              "name": "Steps",
+              "type": "number",
+              "value": "={{ Math.min($json.Prompts.length,5) }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "3228067a-11c6-4481-903d-2010c47df7dc",
+      "name": "Number of Steps",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -208,
+        352
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "64e9c28e-a60a-499b-aa89-177bf952959f",
+              "name": "Prompts",
+              "type": "array",
+              "value": "=[\"Make this animal mascot coming out of the builing with wearing an official business suite. Preserve the exact character features and style\",\"Now make this animal mascot sitting in the terrace mediterranian cafe. Preserve the exact character features and style, but wearing hawaii shorts instead of trouses\",\"Now make this animal mascot standing on the beach with a starfish in it's hands, waring only hawaii shorts. Preserve the exact character features and style.\"]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4e0aae02-6bf0-4764-8545-a69555534b64",
+      "name": "All Prompts",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -416,
+        352
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "AdtCs47Lt1Wtf2Dt",
+          "cachedResultName": "Upload-Post And FLUX Kontext"
+        },
+        "workflowInputs": {
+          "value": {},
+          "schema": [],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "86542043-08ec-4d60-8cb5-9b18a7070e72",
+      "name": "Run FLUX",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "position": [
+        704,
+        368
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "64e9c28e-a60a-499b-aa89-177bf952959f",
+              "name": "prompt",
+              "type": "string",
+              "value": "={{ $json.Prompts[$runIndex] }}"
+            },
+            {
+              "id": "aee3c455-ced2-4520-a088-18ffaf6db11c",
+              "name": "binaryin",
+              "type": "string",
+              "value": "=data{{ $runIndex }}"
+            },
+            {
+              "id": "61cccca2-7b0c-4ea6-82f3-5dc2a377c3cb",
+              "name": "binaryout",
+              "type": "string",
+              "value": "=data{{ Number($runIndex)+1 }}"
+            },
+            {
+              "id": "0cbe4309-e6f0-4c65-87f6-95bf6609aade",
+              "name": "currentstep",
+              "type": "number",
+              "value": "={{ $runIndex }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "Prompts, Steps",
+        "options": {}
+      },
+      "id": "94343e9d-e27b-4d98-a7f3-c037690e04a4",
+      "name": "Current Step",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        464,
+        464
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "11fab0b2-b2ad-40ad-ac4c-68bb914a685d",
+      "name": "Merge3",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        896,
+        448
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "content": "## Iterate over prompts
+- On each step a next prompt it taken from the original array
+- Outputs from the previous FLUX Kontext request are moved forward to the subsequent generation",
+        "height": 380,
+        "width": 860
+      },
+      "id": "294243ac-efcd-4e45-b8f3-08ad7524a384",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        272
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## [Post several images via Upload Post](https://www.upload-post.com/?linkId=lp_144414&sourceId=post-now&tenantId=upload-post-app)
+[Click to create your own account](https://www.upload-post.com/?linkId=lp_144414&sourceId=post-now&tenantId=upload-post-app)",
+        "height": 280,
+        "width": 260,
+        "color": 5
+      },
+      "id": "3dadbe5c-a6dc-47a3-9b01-3334c6269dfb",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        672,
+        688
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "49fde278-bae5-429e-aef4-507cfa89182b",
+      "name": "Upload Post",
+      "type": "n8n-nodes-upload-post.uploadPost",
+      "position": [
+        704,
+        800
+      ],
+      "typeVersion": 1,
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "={{ $('When Executed by Another Workflow').first().json.binaryin }}",
+        "destinationKey": "={{ $('When Executed by Another Workflow').first().json.binaryin }}",
+        "options": {}
+      },
+      "id": "cc9e91e8-2ba9-42e3-acd7-7985fc2eaa5c",
+      "name": "Image to Base64",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        -624,
+        864
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.result.sample }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "={{ $('When Executed by Another Workflow').first().json.binaryout }}"
+            }
+          }
+        }
+      },
+      "id": "69ccf5f5-fdd0-4b6d-8490-5599e48f81dd",
+      "name": "Get Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        256,
+        864
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "## Step 1
+![](https://pbs.twimg.com/media/Gs7SwU_XYAASZBn?format=jpg&name=medium)",
+        "height": 400,
+        "width": 260
+      },
+      "id": "1ab27e16-8b67-48cb-b343-a65ee30d1514",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        -160
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Step 2
+![](https://pbs.twimg.com/media/Gs7SwovWQAAncQT?format=jpg&name=medium)",
+        "height": 400,
+        "width": 260
+      },
+      "id": "0ace4ce2-9ef7-4056-89f6-e887c978ca4a",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        496,
+        -160
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Step 3
+![](https://pbs.twimg.com/media/Gs7SxHsXYAAkhPF?format=jpg&name=medium)",
+        "height": 400,
+        "width": 260
+      },
+      "id": "63506983-df1d-4994-af33-641767cd267c",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        -160
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Current Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run FLUX": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Ready?": {
+      "main": [
+        [
+          {
+            "node": "Get Image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 2 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 sec": {
+      "main": [
+        [
+          {
+            "node": "Check FLUX status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Prompts": {
+      "main": [
+        [
+          {
+            "node": "Number of Steps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Current Step": {
+      "main": [
+        [
+          {
+            "node": "Run FLUX",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "FLUX Kontext": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image to Base64": {
+      "main": [
+        [
+          {
+            "node": "FLUX Kontext",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Number of Steps": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check FLUX status": {
+      "main": [
+        [
+          {
+            "node": "Is Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File from GitHub": {
+      "main": [
+        [
+          {
+            "node": "Download Initial Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Initial Image": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Image to Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get File from GitHub",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "All Prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "37f2155a-eec8-4f9e-8276-ba41c9c6519d",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-22T12:47:40.942Z",
+      "updatedAt": "2025-09-22T12:47:40.942Z",
+      "role": "workflow:owner",
+      "workflowId": "x85JmYFbyVWjpvjd",
+      "projectId": "XDSXqJERuGM10SXD"
+    }
+  ],
+  "tags": []
+}

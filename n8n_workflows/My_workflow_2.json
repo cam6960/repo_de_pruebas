@@ -1,0 +1,81 @@
+{
+  "createdAt": "2025-09-22T13:27:14.985Z",
+  "updatedAt": "2025-09-22T13:27:14.985Z",
+  "id": "XUFVgmJKOZIxoiMJ",
+  "name": "My workflow 2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "copy"
+      },
+      "type": "n8n-nodes-base.dropbox",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        -32
+      ],
+      "id": "87293ac6-21a3-4aa7-90b3-0d3373dcf5f9",
+      "name": "Copy a file"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "operation": "copy"
+      },
+      "type": "n8n-nodes-base.dropbox",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -32
+      ],
+      "id": "467a2f2a-cf81-4805-8fe2-80900fc885c0",
+      "name": "Copy a folder"
+    },
+    {
+      "parameters": {
+        "resource": "search",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.dropbox",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -32
+      ],
+      "id": "fa0e8cfa-4601-4ad8-88d7-edfd5349982e",
+      "name": "Query"
+    }
+  ],
+  "connections": {
+    "Copy a file": {
+      "main": [
+        []
+      ]
+    },
+    "Copy a folder": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "c83b477c-7024-4c09-b392-bfa81204642c",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-22T13:27:14.985Z",
+      "updatedAt": "2025-09-22T13:27:14.985Z",
+      "role": "workflow:owner",
+      "workflowId": "XUFVgmJKOZIxoiMJ",
+      "projectId": "XDSXqJERuGM10SXD"
+    }
+  ],
+  "tags": []
+}
